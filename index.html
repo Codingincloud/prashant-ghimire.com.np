@@ -24,7 +24,7 @@
      for four hours (max-age=14400), so without a new token a change to the
      stylesheet is invisible to anyone who has loaded the site before. Bump it
      whenever site.css or site.js changes: any date or short string will do. -->
-<link rel="stylesheet" href="assets/css/site.css?v=2026-10-09">
+<link rel="stylesheet" href="assets/css/site.css?v=2026-10-09b">
 <script>
   // Set the theme before the first paint so the page never flashes the wrong
   // background. No stored choice means the operating system gets to decide.
@@ -42,6 +42,7 @@
 <body>
 
 <a class="skip" href="#main">Skip to content</a>
+<div class="progress" aria-hidden="true"></div>
 
 <header class="site-head">
   <div class="wrap head-inner">
@@ -55,7 +56,11 @@
       <span class="brand-name">Prashant Ghimire</span>
       <span class="brand-place">Kathmandu</span>
     </a>
-    <button class="theme-btn" id="themeBtn" type="button">Dark</button>
+    <button class="theme-btn" id="themeBtn" type="button">
+      <svg class="sun" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="4.2"></circle></svg>
+      <svg class="moon" viewBox="0 0 16 16" aria-hidden="true"><path d="M11 1.6a6.6 6.6 0 1 0 3.4 11.7A5.4 5.4 0 0 1 11 1.6Z"></path></svg>
+      <span id="themeLabel">Dark</span>
+    </button>
   </div>
 </header>
 
@@ -78,9 +83,9 @@
       </div>
     </section>
 
-    <section id="about" aria-labelledby="about-h">
+    <section id="about" class="reveal" aria-labelledby="about-h">
       <h2 id="about-h">About</h2>
-      <div class="prose">
+      <div class="prose reveal-group">
         <p>
           I am in my fourth year of computer engineering at Khwopa Engineering
           College, Purbanchal University, and expect to graduate in 2027. My
@@ -101,7 +106,7 @@
       </div>
 
       <h3 class="subhead">Education</h3>
-      <ul class="edu">
+      <ul class="edu reveal-group">
         <li>
           <span class="edu-years">2021 to 2027</span>
           <span class="edu-what">
@@ -120,13 +125,20 @@
       </ul>
     </section>
 
-    <section id="contact" aria-labelledby="contact-h">
+    <section id="contact" class="reveal" aria-labelledby="contact-h">
       <h2 id="contact-h">Contact</h2>
-      <div class="contact">
+      <div class="contact" id="contactPanel">
         <p class="contact-line">Email is the fastest way to reach me.</p>
         <div class="email-row">
           <a class="email" href="mailto:ghimireprashant2005@gmail.com">ghimireprashant2005@gmail.com</a>
-          <button class="copy" id="copyBtn" type="button" aria-label="Copy the email address">Copy</button>
+          <button class="copy" id="copyBtn" type="button" aria-label="Copy the email address">
+            <svg class="clip" viewBox="0 0 16 16" aria-hidden="true">
+              <rect x="2.8" y="6.2" width="6.6" height="7" rx="1.8"></rect>
+              <rect x="6.6" y="2.8" width="6.6" height="7" rx="1.8"></rect>
+            </svg>
+            <svg class="tick" viewBox="0 0 16 16" aria-hidden="true"><path d="M3.4 8.6 6.4 11.6 12.6 4.8"></path></svg>
+            <span id="copyLabel" aria-live="polite">Copy</span>
+          </button>
         </div>
         <p class="contact-meta">
           <a href="https://github.com/Codingincloud">github.com/Codingincloud</a>
@@ -161,6 +173,6 @@
   "knowsAbout": ["Linux", "Computer networking", "Information security"]
 }
 </script>
-<script src="assets/js/site.js?v=2026-10-09"></script>
+<script src="assets/js/site.js?v=2026-10-09b"></script>
 </body>
 </html>
