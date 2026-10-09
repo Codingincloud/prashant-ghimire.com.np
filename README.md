@@ -53,6 +53,25 @@ repository claims it, so the missing piece is the repository, not the DNS.
    | A | `@` | `185.199.111.153` |
    | CNAME | `www` | `codingincloud.github.io` |
 
+## What the proxy adds
+
+The zone is proxied by Cloudflare, and Cloudflare edits the HTML on the way
+through. Two of its features change this page, and neither is in this
+repository:
+
+- **Scrape Shield → Email Address Obfuscation** rewrites the `mailto:` links into
+  `/cdn-cgi/l/email-protection` links that only resolve once its decoder script
+  has run. With JavaScript off, the contact address is dead text instead of a
+  link. (Wrapping the `@` in an HTML entity does not avoid this; it was tried.)
+- **Web Analytics**, if it is on for the zone, adds the `cloudflareinsights.com`
+  beacon, which is a request to a third-party host. That is why the footer talks
+  about the code rather than about the page's network traffic: the code makes no
+  such request, and the proxy may anyway.
+
+Switching both off is what makes the served page identical to this repository.
+Setting the DNS record to *DNS only* (grey cloud) also removes both, in
+exchange for Cloudflare's caching and CDN.
+
 ## Changing the text
 
 Everything a reader sees is in `index.html`, in reading order: hero, About,
