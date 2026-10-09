@@ -1,0 +1,8 @@
+# GitHub Pages serves these files exactly as they are committed, so text is
+# stored with LF and binaries are left alone.
+* text=auto eol=lf
+
+*.png binary
+*.webp binary
+*.woff2 binary
+*.pdf binary

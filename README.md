@@ -1,0 +1,71 @@
+# prashant-ghimire.com.np
+
+The personal site. One page, one stylesheet, one small script, one social card.
+No framework, no build step, no dependencies, no analytics, and nothing loaded
+from a third-party domain: the three font files live in `assets/fonts/`.
+
+```
+index.html                  the whole site
+404.html                    served by GitHub Pages for anything missing
+CNAME                       prashant-ghimire.com.np
+assets/css/site.css         the stylesheet
+assets/js/site.js           theme toggle and the copy-email button
+assets/fonts/               Inter, Newsreader, JetBrains Mono (woff2)
+assets/img/og.png           the card that shows when the link is shared
+assets/Prashant-Ghimire-CV.pdf
+robots.txt · sitemap.xml · favicon.svg · .nojekyll
+```
+
+The folder is about 275 KB in total, most of it the three font files. A visitor loads about 240 KB.
+
+## Publishing it
+
+The domain already resolves to GitHub Pages. It answers 404 today because no
+repository claims it, so the missing piece is the repository, not the DNS.
+
+1. Create a new **public** repository, for example `prashant-ghimire.com.np`,
+   and push this folder to it as the repository root:
+
+   ```bash
+   cd portfolio
+   git init -b main
+   git add .
+   git commit -m "The site, first version"
+   git remote add origin https://github.com/Codingincloud/prashant-ghimire.com.np.git
+   git push -u origin main
+   ```
+
+2. In the repository, **Settings → Pages**: set *Source* to `Deploy from a
+   branch`, branch `main`, folder `/ (root)`. The `CNAME` file in this folder
+   sets the custom domain; if the field stays empty, type
+   `prashant-ghimire.com.np` into *Custom domain* and save.
+
+3. DNS, in Cloudflare. If the record is proxied (orange cloud), GitHub cannot
+   finish issuing its certificate for the domain. Turn the proxy off, save the
+   custom domain in Pages, wait for *Enforce HTTPS* to become available, then
+   turn the proxy back on if you want it.
+
+   | Type | Name | Value |
+   | :--- | :--- | :--- |
+   | A | `@` | `185.199.108.153` |
+   | A | `@` | `185.199.109.153` |
+   | A | `@` | `185.199.110.153` |
+   | A | `@` | `185.199.111.153` |
+   | CNAME | `www` | `codingincloud.github.io` |
+
+## Changing the text
+
+Everything a reader sees is in `index.html`, in reading order: hero, About,
+skills, Contact. The date in the footer and in `sitemap.xml` is written by hand,
+so update both when the content changes.
+
+Read the page out loud once before publishing. Every claim on it should be
+something you would say in an interview without flinching.
+
+One detail: `404.html` loads its stylesheet as `/assets/css/site.css`, which is
+right for the domain root. Served from a subpath (a `github.io/<repo>/` URL) it
+will render unstyled. Nothing else on the site depends on the root like that.
+
+Also: do not commit this folder into the `d` repository it currently sits
+inside. It belongs in the new repository, and the commands above are the way it
+gets there.
