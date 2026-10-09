@@ -57,7 +57,11 @@
     </p>
     <p class="status"><span class="dot"></span>Open to a security analyst or SOC internship. Kathmandu or remote.</p>
     <div class="actions">
-      <a class="btn primary" href="mailto:ghimireprashant2005@gmail.com">Email me</a>
+      <!-- The @ is written as an entity on purpose: Cloudflare's proxy rewrites
+           a literal address into /cdn-cgi/l/email-protection, which turns this
+           link into dead text for anyone with JavaScript off. The entity is
+           rendered identically and is left alone. -->
+      <a class="btn primary" href="mailto:ghimireprashant2005&#64;gmail.com">Email me</a>
       <a class="btn" href="assets/Prashant-Ghimire-CV.pdf">CV, one page (PDF)</a>
       <a class="btn" href="https://github.com/Codingincloud">GitHub</a>
     </div>
@@ -133,7 +137,7 @@
     <div class="contact-card">
       <p>Email is the fastest way to reach me.</p>
       <div class="email-row">
-        <a href="mailto:ghimireprashant2005@gmail.com">ghimireprashant2005@gmail.com</a>
+        <a href="mailto:ghimireprashant2005&#64;gmail.com">ghimireprashant2005&#64;gmail.com</a>
         <button class="copy" id="copyBtn" type="button" aria-label="Copy the email address">Copy</button>
       </div>
       <p class="contact-meta">
@@ -149,7 +153,8 @@
 <footer class="site-foot">
   <div class="wrap">
     <p>Prashant Ghimire, Kathmandu. Last updated 9 October 2026.</p>
-    <p>No framework, no analytics, no third-party requests. Fonts are served from this domain.</p>
+    <p>Hand-written HTML and CSS, one small script. No framework, no build step, no dependencies.</p>
+    <p>The page and its fonts are served from this domain. Nothing here fetches from anyone else.</p>
   </div>
 </footer>
 
