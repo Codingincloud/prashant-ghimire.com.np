@@ -20,7 +20,11 @@
 <meta name="twitter:card" content="summary_large_image">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <link rel="preload" href="assets/fonts/newsreader-latin.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="assets/css/site.css">
+<!-- The ?v= token is the cache key. Cloudflare caches static files at the edge
+     for four hours (max-age=14400), so without a new token a change to the
+     stylesheet is invisible to anyone who has loaded the site before. Bump it
+     whenever site.css or site.js changes: any date or short string will do. -->
+<link rel="stylesheet" href="assets/css/site.css?v=2026-10-09">
 <script>
   // Set the theme before the first paint so the page never flashes the wrong
   // background. No stored choice means the operating system gets to decide.
@@ -157,6 +161,6 @@
   "knowsAbout": ["Linux", "Computer networking", "Information security"]
 }
 </script>
-<script src="assets/js/site.js"></script>
+<script src="assets/js/site.js?v=2026-10-09"></script>
 </body>
 </html>

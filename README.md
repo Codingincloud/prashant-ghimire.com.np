@@ -76,16 +76,23 @@ exchange for Cloudflare's caching and CDN.
 
 ## Changing the text
 
-Everything a reader sees is in `index.html`, in reading order: hero, About,
-skills, Contact. The date in the footer and in `sitemap.xml` is written by hand,
-so update both when the content changes.
+Everything a reader sees is in `index.html`, in reading order: the name and
+introduction, About, education, Contact. The date in the footer and in
+`sitemap.xml` is written by hand, so update both when the content changes.
+
+When `assets/css/site.css` or `assets/js/site.js` changes, bump the `?v=` token
+on its `<link>` or `<script>` tag in `index.html`. Cloudflare caches static files
+at the edge for four hours, and the browser caches them too, so without a new
+token the old stylesheet keeps being served and the change looks like it did not
+deploy. The token is any string; a date reads best.
 
 Read the page out loud once before publishing. Every claim on it should be
 something you would say in an interview without flinching.
 
-One detail: `404.html` loads its stylesheet as `/assets/css/site.css`, which is
-right for the domain root. Served from a subpath (a `github.io/<repo>/` URL) it
-will render unstyled. Nothing else on the site depends on the root like that.
+One detail worth keeping: `404.html` carries its own styles inline instead of
+linking the stylesheet. A 404 is served at whatever path was asked for, so a
+linked stylesheet would have to be either root-absolute (wrong under a subpath)
+or relative (wrong at depth). Inline costs nothing and cannot render unstyled.
 
 Also: do not commit this folder into the `d` repository it currently sits
 inside. It belongs in the new repository, and the commands above are the way it
