@@ -144,9 +144,12 @@ if motion is switched off. Below 48rem the layers are never built at all, and on
 a device reporting less than 4GB of memory the pointer lean is left out entirely.
 
 They are decoration with a cost, so the two things that could go wrong are
-measured rather than assumed. Contrast: the worst text on the page holds 4.9:1 in
-light and 6.4:1 in dark with the lights on, against 5.0:1 and 6.4:1 with them
-off — the light does not reach the reading column. Frames: scrolling with the
+measured rather than assumed. Contrast: sampled from the pixels the browser
+drew behind each text element, at three points down the page, the worst text
+holds 4.93:1 in light and 6.41:1 in dark with the lights on, against 4.97:1 and
+6.41:1 with them off. The light reaches the reading column only as a faint tail,
+and costs it 0.04; the section-by-section travel was re-measured for exactly
+that reason. Frames: scrolling with the
 lights on and off, on a software rasteriser with no GPU, gives the same 6.5ms
 95th-percentile frame. If the colours or positions are ever changed, measure
 again, and sample the pixels the browser drew behind the text rather than the
