@@ -100,6 +100,68 @@ body::before {
   pointer-events: none;
   z-index: 0;
 }
+
+/* ---------- ambience: the light the page sits in ------------------------- */
+
+/* Two soft lights behind everything, drawn here rather than fetched. A narrow
+   screen has no room for them and never builds the layers at all; from a
+   laptop up they fill the space either side of the column, which is the part
+   of a large screen a 40rem page otherwise leaves empty.
+
+   Three nested pieces on purpose, so no two of them want the same transform:
+   the frame leans with the pointer, the room inside it slides with the scroll,
+   and each light drifts on its own slow cycle. All of it is transform and
+   opacity on fixed layers, which the compositor carries without repainting. */
+.ambience {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+  opacity: 0;
+  transform: translate3d(var(--gx, 0px), var(--gy, 0px), 0);
+  transition: transform 700ms var(--ease);
+}
+.ambience .room {
+  position: absolute;
+  inset: 0;
+}
+.ambience i {
+  position: absolute;
+  display: block;
+  border-radius: 50%;
+  filter: blur(50px);
+  background: radial-gradient(circle,
+    color-mix(in srgb, var(--accent) 22%, transparent), transparent 68%);
+}
+.ambience i:nth-child(1) {
+  /* the warm one sits in the top corner, its centre just inside the screen, so
+     the light the reader sees is the light itself rather than its tail */
+  width: 40rem; height: 40rem;
+  top: -13rem; right: -5rem;
+}
+.ambience i:nth-child(2) {
+  width: 34rem; height: 34rem;
+  top: 26rem; left: -13rem;
+  background: radial-gradient(circle,
+    color-mix(in srgb, var(--ink) 9%, transparent), transparent 72%);
+}
+/* Dark is where a light reads best, so it is allowed to be the stronger of the
+   two themes; on paper the same value would look like a stain. */
+[data-theme="dark"] .ambience i:nth-child(1) {
+  background: radial-gradient(circle,
+    color-mix(in srgb, var(--accent) 26%, transparent), transparent 66%);
+}
+[data-theme="dark"] .ambience i:nth-child(2) {
+  background: radial-gradient(circle,
+    color-mix(in srgb, var(--accent) 17%, transparent), transparent 70%);
+}
+
+/* Room for them is a question about the screen, not about motion: a still page
+   on a large screen is lit this way too. */
+@media (min-width: 48rem) {
+  .ambience { opacity: 1; }
+}
 body::after {
   content: "";
   position: fixed;
@@ -523,6 +585,9 @@ h2 {
   --a-reveal: none;
   --a-wipe: none;
   --a-progress: none;
+  --a-glow-1: none;
+  --a-glow-2: none;
+  --a-glow-lift: none;
   --letter-step: 22ms;
 }
 /* What the operating system says, for a reader who has not answered and for one
@@ -537,6 +602,9 @@ h2 {
     --a-reveal: reveal-in;
     --a-wipe: theme-wipe;
     --a-progress: progress-grow;
+    --a-glow-1: glow-one;
+    --a-glow-2: glow-two;
+    --a-glow-lift: glow-lift;
   }
 }
 /* What the reader says, which outranks the system either way. */
@@ -549,6 +617,9 @@ html[data-motion="on"] {
   --a-reveal: reveal-in;
   --a-wipe: theme-wipe;
   --a-progress: progress-grow;
+  --a-glow-1: glow-one;
+  --a-glow-2: glow-two;
+  --a-glow-lift: glow-lift;
 }
 html[data-motion="off"] {
   --a-rise: none;
@@ -559,6 +630,9 @@ html[data-motion="off"] {
   --a-reveal: none;
   --a-wipe: none;
   --a-progress: none;
+  --a-glow-1: none;
+  --a-glow-2: none;
+  --a-glow-lift: none;
 }
 
 /* -- arrival: the page assembles rather than appearing ------------------ */
@@ -601,6 +675,29 @@ html[data-motion="on"] .hero > h1.split > .w > .l {
 }
 .mark rect.cursor { animation: var(--a-blink) 1.4s steps(1, end) 900ms infinite; }
 html[data-scrolling] .mark rect.cursor { animation-duration: 520ms; }
+
+/* The lights. Slow enough that nothing is ever caught moving: the room changes
+   over a minute, and slides a few pixels as the reader scrolls. */
+.ambience i:nth-child(1) {
+  animation: var(--a-glow-1) 64s ease-in-out infinite alternate;
+}
+.ambience i:nth-child(2) {
+  animation: var(--a-glow-2) 88s ease-in-out infinite alternate;
+}
+@supports (animation-timeline: scroll()) {
+  .ambience .room {
+    animation: var(--a-glow-lift) linear both;
+    animation-timeline: scroll(root block);
+  }
+}
+
+/* Above this width the page is no longer read on a phone, and the reading
+   rhythm gets more air. */
+@media (min-width: 80rem) {
+  .hero { padding-top: 7rem; }
+  section { padding-top: 4.5rem; }
+  .subhead { margin-top: 3.5rem; }
+}
 
 /* -- scroll reveals: native, no observer, no listener ------------------- */
 @supports (animation-timeline: view()) {
@@ -664,6 +761,18 @@ html[data-scrolling] .mark rect.cursor { animation-duration: 520ms; }
 @keyframes theme-wipe {
   from { clip-path: circle(0 at var(--wipe-x, 50%) var(--wipe-y, 2rem)); }
   to { clip-path: circle(var(--wipe-r, 120vmax) at var(--wipe-x, 50%) var(--wipe-y, 2rem)); }
+}
+@keyframes glow-one {
+  from { transform: translate3d(0, 0, 0) scale(1); }
+  to { transform: translate3d(5rem, 4rem, 0) scale(1.12); }
+}
+@keyframes glow-two {
+  from { transform: translate3d(0, 0, 0) scale(1.06); }
+  to { transform: translate3d(-4rem, -3rem, 0) scale(0.94); }
+}
+@keyframes glow-lift {
+  from { transform: translateY(0); }
+  to { transform: translateY(-6rem); }
 }
 
 /* Two ways for motion to be off, and both flatten what is left: the operating

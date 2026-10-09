@@ -103,6 +103,27 @@ a class, so a page with the script blocked still reads.
 If a section is added near the foot of the page, the reveal there is the one to
 check first: scroll it into view and leave it, then confirm it is fully opaque.
 
+## The light behind the page
+
+From a laptop up, two soft lights sit behind everything — one in the top corner,
+one down the left — drawn with radial gradients rather than fetched from
+anywhere. They drift on their own over about a minute, lean a few pixels with
+the pointer, and slide as the page scrolls. Below 48rem the layers are never
+built at all, and on a device reporting less than 4GB of memory the pointer lean
+is left out entirely.
+
+They are decoration with a cost, so the two things that could go wrong are
+measured rather than assumed. Contrast: the worst text on the page holds 4.9:1 in
+light and 6.4:1 in dark with the lights on, against 5.0:1 and 6.4:1 with them
+off — the light does not reach the reading column. Frames: scrolling with the
+lights on and off, on a software rasteriser with no GPU, gives the same 6.5ms
+95th-percentile frame. If the colours or positions are ever changed, measure
+again, and sample the pixels the browser drew behind the text rather than the
+background the stylesheet intended.
+
+At 80rem and up the reading rhythm also gets more air — 7rem above the fold and
+4.5rem between sections — because a screen that size is read from further away.
+
 ## Who decides whether the page moves
 
 The operating system's preference is the starting point and the reader has the

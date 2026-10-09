@@ -87,6 +87,31 @@
     });
   }
 
+  /* ---- the room leans with the pointer --------------------------------- */
+
+  /* A large screen has space either side of the column, so the light in that
+     space can follow the pointer. Only where the layers were built at all — a
+     narrow screen never draws them — and not on a device that reports little
+     memory. The move is small and the stylesheet trails it, so it reads as
+     light rather than as a cursor. */
+  var ambience = document.querySelector(".ambience");
+  var roomy = window.matchMedia("(min-width: 48rem)").matches;
+  var thin = typeof navigator.deviceMemory === "number" && navigator.deviceMemory < 4;
+  if (ambience && fine.matches && roomy && !thin) {
+    var leaning = false;
+    document.addEventListener("pointermove", function (e) {
+      if (!motionOn() || leaning) return;
+      leaning = true;
+      requestAnimationFrame(function () {
+        var dx = e.clientX / window.innerWidth - 0.5;
+        var dy = e.clientY / window.innerHeight - 0.5;
+        ambience.style.setProperty("--gx", (dx * 30).toFixed(1) + "px");
+        ambience.style.setProperty("--gy", (dy * 20).toFixed(1) + "px");
+        leaning = false;
+      });
+    }, { passive: true });
+  }
+
   /* ---- the mark's caret works while the reader scrolls ------------------ */
   var still;
   var working = false;
