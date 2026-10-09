@@ -4,9 +4,10 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Prashant Ghimire · Computer engineering student, Kathmandu</title>
-<meta name="description" content="Prashant Ghimire is a computer engineering student in Kathmandu, working toward a security analyst internship. Linux, networking, and the fundamentals underneath them.">
+<meta name="description" content="Prashant Ghimire is a computer engineering student in Kathmandu, working toward a security analyst internship.">
 <meta name="author" content="Prashant Ghimire">
-<meta name="theme-color" content="#faf9f6">
+<meta name="theme-color" content="#fbfaf7" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0e1013" media="(prefers-color-scheme: dark)">
 <link rel="canonical" href="https://prashant-ghimire.com.np/">
 <meta property="og:type" content="website">
 <meta property="og:title" content="Prashant Ghimire · Computer engineering student, Kathmandu">
@@ -19,7 +20,6 @@
 <meta name="twitter:card" content="summary_large_image">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <link rel="preload" href="assets/fonts/newsreader-latin.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="preload" href="assets/fonts/inter-latin.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="assets/css/site.css">
 <script>
   // Set the theme before the first paint so the page never flashes the wrong
@@ -40,38 +40,43 @@
 <a class="skip" href="#main">Skip to content</a>
 
 <header class="site-head">
-  <div class="wrap">
-    <a class="brand" href="#top">Prashant Ghimire <span>· Kathmandu</span></a>
+  <div class="wrap head-inner">
+    <a class="brand" href="#top">
+      <svg class="mark" viewBox="0 0 32 32" aria-hidden="true" focusable="false">
+        <rect width="32" height="32" rx="8"></rect>
+        <path d="M10 11 L16.5 16 L10 21" fill="none" stroke-width="2.6"
+              stroke-linecap="round" stroke-linejoin="round"></path>
+        <rect class="cursor" x="19" y="19.4" width="5" height="2.6" rx="1.3"></rect>
+      </svg>
+      <span class="brand-name">Prashant Ghimire</span>
+      <span class="brand-place">Kathmandu</span>
+    </a>
     <button class="theme-btn" id="themeBtn" type="button">Dark</button>
   </div>
 </header>
 
-<main id="main" class="wrap" tabindex="-1">
+<main id="main" tabindex="-1">
+  <div class="wrap">
 
-  <div class="hero" id="top">
-    <p class="eyebrow">Kathmandu, Nepal · UTC+5:45</p>
-    <h1>Prashant Ghimire</h1>
-    <p class="lede">
-      Fourth-year computer engineering student, working toward a security analyst
-      internship. Linux, networking, and the fundamentals underneath them.
-    </p>
-    <p class="status"><span class="dot"></span>Open to a security analyst or SOC internship. Kathmandu or remote.</p>
-    <div class="actions">
-      <!-- Note: served through a proxying DNS (Cloudflare), this address is
-           rewritten at the edge into a /cdn-cgi/l/email-protection link and
-           decoded in the browser. Turn Scrape Shield's Email Address
-           Obfuscation off on the zone if the raw HTML should carry the
-           address itself. The copy button is unaffected: it is a script. -->
-      <a class="btn primary" href="mailto:ghimireprashant2005@gmail.com">Email me</a>
-      <a class="btn" href="assets/Prashant-Ghimire-CV.pdf">CV, one page (PDF)</a>
-      <a class="btn" href="https://github.com/Codingincloud">GitHub</a>
-    </div>
-  </div>
+    <section class="hero" id="top">
+      <p class="eyebrow">Kathmandu, Nepal · UTC+5:45</p>
+      <h1>Prashant Ghimire</h1>
+      <p class="lede">
+        Fourth-year computer engineering student, working toward a security
+        analyst internship. Linux, networking, and the fundamentals underneath
+        them.
+      </p>
+      <p class="status"><span class="dot" aria-hidden="true"></span>Open to a security analyst or SOC internship, Kathmandu or remote.</p>
+      <div class="actions">
+        <a class="btn primary" href="mailto:ghimireprashant2005@gmail.com">Email me</a>
+        <a class="btn" href="assets/Prashant-Ghimire-CV.pdf">CV, one page</a>
+        <a class="btn" href="https://github.com/Codingincloud">GitHub</a>
+      </div>
+    </section>
 
-  <section id="about" aria-labelledby="about-h">
-    <h2 id="about-h">About</h2>
-    <div class="about-grid">
-      <div>
+    <section id="about" aria-labelledby="about-h">
+      <h2 id="about-h">About</h2>
+      <div class="prose">
         <p>
           I am in my fourth year of computer engineering at Khwopa Engineering
           College, Purbanchal University, and expect to graduate in 2027. My
@@ -80,82 +85,62 @@
           you.
         </p>
         <p>
-          I would rather show the work than claim it. Most of what I know came from
-          setting something up on my own machine and breaking it until it made
-          sense.
+          I would rather show the work than claim it. Most of what I know came
+          from setting something up on my own machine and breaking it until it
+          made sense.
         </p>
         <p>
-          No professional experience yet. What I want next is a security analyst or
-          SOC internship where I can do real work under people who know more than I
-          do. I learn fastest when something is mine to own.
+          No professional experience yet. What I want next is a security analyst
+          or SOC internship where I can do real work under people who know more
+          than I do. I learn fastest when something is mine to own.
         </p>
-
-        <ul class="edu">
-          <li>
-            <b>Khwopa Engineering College</b>, Bachelor of Engineering, Computer Engineering
-            <span>Purbanchal University · 2021 to 2027 expected · Year IV, Semester VII</span>
-          </li>
-          <li>
-            <b>National School of Sciences, Lainchaur</b>, Higher Secondary, Science
-            <span>Kathmandu</span>
-          </li>
-        </ul>
       </div>
 
-      <div class="skills">
-        <div>
-          <h3>Systems and networking</h3>
-          <p>
-            Linux command line: permissions, users and groups, <code>sudo</code>,
-            special bits, processes. Windows fundamentals: NTFS permissions, UAC,
-            Task Manager, BitLocker, Windows Firewall. TCP/IP and the OSI model,
-            DNS, DHCP, subnetting, common ports and protocols. Packet capture in
-            Wireshark.
-          </p>
-        </div>
-        <div>
-          <h3>Security</h3>
-          <p>
-            The CIA triad and security frameworks, common attack types and the
-            threat landscape, risk management basics. Active Directory basics:
-            domains, Group Policy, authentication. Nmap host discovery and port
-            enumeration.
-          </p>
-        </div>
-        <div>
-          <h3>Code and data</h3>
-          <p>
-            Python and Bash, SQL, PostgreSQL and MySQL. HTML, CSS and JavaScript.
-            Git and GitHub. LaTeX.
-          </p>
-        </div>
-      </div>
-    </div>
-  </section>
+      <h3 class="subhead">Education</h3>
+      <ul class="edu">
+        <li>
+          <span class="edu-years">2021 to 2027</span>
+          <span class="edu-what">
+            <b>Khwopa Engineering College</b>
+            Bachelor of Engineering, Computer Engineering, Purbanchal University.
+            Currently Year IV, Semester VII.
+          </span>
+        </li>
+        <li>
+          <span class="edu-years">Completed</span>
+          <span class="edu-what">
+            <b>National School of Sciences, Lainchaur</b>
+            Higher secondary, science.
+          </span>
+        </li>
+      </ul>
+    </section>
 
-  <section id="contact" aria-labelledby="contact-h">
-    <h2 id="contact-h">Contact</h2>
-    <div class="contact-card">
-      <p>Email is the fastest way to reach me.</p>
-      <div class="email-row">
-        <a href="mailto:ghimireprashant2005@gmail.com">ghimireprashant2005@gmail.com</a>
-        <button class="copy" id="copyBtn" type="button" aria-label="Copy the email address">Copy</button>
+    <section id="contact" aria-labelledby="contact-h">
+      <h2 id="contact-h">Contact</h2>
+      <div class="contact">
+        <p class="contact-line">Email is the fastest way to reach me.</p>
+        <div class="email-row">
+          <a class="email" href="mailto:ghimireprashant2005@gmail.com">ghimireprashant2005@gmail.com</a>
+          <button class="copy" id="copyBtn" type="button" aria-label="Copy the email address">Copy</button>
+        </div>
+        <p class="contact-meta">
+          <a href="https://github.com/Codingincloud">github.com/Codingincloud</a>
+          <span class="sep" aria-hidden="true">/</span>
+          <a href="assets/Prashant-Ghimire-CV.pdf">CV (PDF)</a>
+          <span class="sep" aria-hidden="true">/</span>
+          Kathmandu, Nepal
+        </p>
       </div>
-      <p class="contact-meta">
-        GitHub: <a href="https://github.com/Codingincloud">github.com/Codingincloud</a><br>
-        CV: <a href="assets/Prashant-Ghimire-CV.pdf">Prashant-Ghimire-CV.pdf</a><br>
-        Kathmandu, Nepal · UTC+5:45
-      </p>
-    </div>
-  </section>
+    </section>
 
+  </div>
 </main>
 
 <footer class="site-foot">
   <div class="wrap">
     <p>Prashant Ghimire, Kathmandu. Last updated 9 October 2026.</p>
     <p>Hand-written HTML and CSS, one small script. No framework, no build step, no dependencies.</p>
-    <p>The typefaces are bundled with the site rather than loaded from a font service.</p>
   </div>
 </footer>
 
@@ -169,7 +154,7 @@
   "jobTitle": "Computer engineering student",
   "address": { "@type": "PostalAddress", "addressLocality": "Kathmandu", "addressCountry": "NP" },
   "sameAs": ["https://github.com/Codingincloud"],
-  "knowsAbout": ["Linux", "Computer networking", "Wireshark", "Information security"]
+  "knowsAbout": ["Linux", "Computer networking", "Information security"]
 }
 </script>
 <script src="assets/js/site.js"></script>

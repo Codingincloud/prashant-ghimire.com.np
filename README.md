@@ -1,8 +1,9 @@
 # prashant-ghimire.com.np
 
 The personal site. One page, one stylesheet, one small script, one social card.
-No framework, no build step, no dependencies, no analytics, and nothing loaded
-from a third-party domain: the three font files live in `assets/fonts/`.
+No framework, no build step, no dependencies, and nothing loaded from a
+third-party domain: the two font files live in `assets/fonts/`. There is no
+skill list and no project list on the page, on purpose.
 
 ```
 index.html                  the whole site
@@ -10,13 +11,14 @@ index.html                  the whole site
 CNAME                       prashant-ghimire.com.np
 assets/css/site.css         the stylesheet
 assets/js/site.js           theme toggle and the copy-email button
-assets/fonts/               Inter, Newsreader, JetBrains Mono (woff2)
+assets/fonts/               Inter (UI) and Newsreader (display, prose), woff2
 assets/img/og.png           the card that shows when the link is shared
 assets/Prashant-Ghimire-CV.pdf
 robots.txt · sitemap.xml · favicon.svg · .nojekyll
 ```
 
-The folder is about 275 KB in total, most of it the three font files. A visitor loads about 240 KB.
+The folder is about 238 KB in total, most of it the two font files. A visitor loads
+about 193 KB.
 
 ## Publishing it
 
