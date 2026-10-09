@@ -89,6 +89,20 @@ deploy. The token is any string; a date reads best.
 Read the page out loud once before publishing. Every claim on it should be
 something you would say in an interview without flinching.
 
+## The one rule the motion follows
+
+Sections fade in as they are reached, and the reveals are CSS only
+(`animation-timeline: view()`), which the browser cannot tell "already on screen"
+from "not reached yet". Left alone, a block visible at load, or a block with
+less page beneath it than its range needs, would sit half-lit with no scroll left
+to finish it. `settleReveals()` in `site.js` catches both cases and gives those
+blocks the page's ordinary arrival instead: they fade once, 50 ms apart from each
+other, and are done. Nothing is ever dim on purpose, and the rule only ever adds
+a class, so a page with the script blocked still reads.
+
+If a section is added near the foot of the page, the reveal there is the one to
+check first: scroll it into view and leave it, then confirm it is fully opaque.
+
 One detail worth keeping: `404.html` carries its own styles inline instead of
 linking the stylesheet. A 404 is served at whatever path was asked for, so a
 linked stylesheet would have to be either root-absolute (wrong under a subpath)

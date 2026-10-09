@@ -1,4 +1,4 @@
-/* The whole site script. Four small things, no dependencies, about 3 KB.
+/* The whole site script. Five small things, no dependencies, about 3 KB.
 
    Everything here is an enhancement: with JavaScript off the page reads, every
    link works, and the theme simply follows the operating system. Every moving
@@ -69,6 +69,55 @@
   } else if (copy) {
     copy.hidden = true;
   }
+
+  /* ---- promises the scroll reveals cannot keep ------------------------- */
+
+  /* The reveals are native CSS (`animation-timeline: view()`), and that engine
+     cannot tell "already on screen" from "not reached yet". Two cases leave a
+     block dim with no scroll left to finish it: an element inside the first
+     screen at load, and an element with less page beneath it than its range
+     needs. Both get the page's ordinary arrival instead: they fade once and are
+     done, so nothing is ever dim on purpose. Only classes are added, never
+     removed, and only the reader who allows motion is affected. */
+  var REVEAL_ROOM = 0.24; // the widest `animation-range` end in the stylesheet
+  var reveals = document.querySelectorAll(".reveal, .reveal-group > *");
+  var firstPass = true;
+
+  function settleReveals() {
+    if (calm.matches || !reveals.length) return;
+    var vh = window.innerHeight;
+    var page = document.documentElement.scrollHeight;
+    for (var i = 0; i < reveals.length; i++) {
+      var el = reveals[i];
+      if (el.classList.contains("reveal-appear")) continue;
+      var box = el.getBoundingClientRect();
+      var onScreen = box.top < vh && box.bottom > 0;
+      var top = box.top + (window.scrollY || window.pageYOffset || 0);
+      var room = top + REVEAL_ROOM * (vh + box.height) <= page;
+      if (onScreen || !room) {
+        // When the whole page is on screen at once, one shared fade would read
+        // as a single blink. A short stagger down the page keeps the arrival
+        // looking composed. Later passes are a resize or a font swap, where a
+        // wave would just look broken, so they are left immediate.
+        var holds = el.querySelector(".reveal, .reveal-group > *");
+        el.classList.add(holds ? "reveal-hold" : "reveal-appear");
+        if (!holds && firstPass && onScreen) {
+          el.style.animationDelay = Math.min(i * 50, 400) + "ms";
+        }
+      }
+    }
+  }
+
+  settleReveals();
+  firstPass = false;
+  // Web fonts change text height, and a taller or shorter window changes what
+  // the range can reach, so the answer is worth asking again both times.
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(settleReveals);
+  var onResize;
+  window.addEventListener("resize", function () {
+    clearTimeout(onResize);
+    onResize = setTimeout(settleReveals, 200);
+  }, { passive: true });
 
   /* ---- the panel listens for the pointer ------------------------------- */
   var panel = document.getElementById("contactPanel");

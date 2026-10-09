@@ -508,6 +508,27 @@ h2 {
   ::view-transition-new(root) {
     animation: theme-wipe var(--slowest) var(--ease) both;
   }
+
+  /* The reveal above is a promise the browser cannot always keep: an element
+     already on screen at load, or one with too little page left beneath it to
+     reach the end of its range, would wait forever at partial opacity. The
+     script hands those the ordinary arrival instead, so text is never dim on
+     purpose. Specificity ties with `.reveal-group > *`, so this must stay
+     below it. */
+  .reveal-appear {
+    animation: rise var(--slowest) var(--ease) both;
+    animation-timeline: auto;
+    animation-range: normal;
+  }
+
+  /* A block whose own children are already arriving stays still. Without this
+     the group and the paragraphs would move the same text twice, and the
+     arrival would read as heavier than the rest of the page. */
+  .reveal-hold {
+    animation: none;
+    animation-timeline: auto;
+    animation-range: normal;
+  }
 }
 
 @keyframes rise {
