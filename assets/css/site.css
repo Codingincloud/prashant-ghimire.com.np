@@ -12,7 +12,8 @@
    compositor. Scroll reveals and the progress line are native CSS
    (`animation-timeline`), so they cost no JavaScript and simply do not play in
    a browser that lacks them: the content is visible either way. Every rule that
-   moves is inside `prefers-reduced-motion: no-preference`.
+   moves is named through one variable, so the whole layer is switched on and
+   off in one place — by the operating system, or by the reader.
    =========================================================================== */
 
 @font-face {
@@ -144,11 +145,9 @@ p { text-wrap: pretty; }
   opacity: 0.75;
 }
 @supports (animation-timeline: scroll()) {
-  @media (prefers-reduced-motion: no-preference) {
-    .progress {
-      animation: progress-grow linear both;
-      animation-timeline: scroll(root block);
-    }
+  .progress {
+    animation: var(--a-progress) linear both;
+    animation-timeline: scroll(root block);
   }
 }
 @keyframes progress-grow { to { transform: scaleX(1); } }
@@ -181,7 +180,6 @@ p { text-wrap: pretty; }
 @media (max-width: 30rem) { .brand-place { display: none; } }
 
 .theme-btn {
-  margin-left: auto;
   display: inline-flex; align-items: center; gap: 0.4rem;
   min-height: 2.1rem;
   font: 500 0.76rem var(--sans);
@@ -202,6 +200,51 @@ p { text-wrap: pretty; }
 .theme-btn .sun { display: none; }
 [data-theme="dark"] .theme-btn .sun { display: block; }
 [data-theme="dark"] .theme-btn .moon { display: none; }
+
+/* Three things to fit in one row on a narrow phone, so they give way in that
+   order: the switch tightens its padding first, and only on the narrowest
+   phones does the theme button drop its word — the sun and the moon already
+   carry its state, and its label names it for a screen reader. The switch
+   keeps its word everywhere, because its block of light means less on its own. */
+@media (max-width: 26rem) {
+  .motion-btn { padding-left: 0.55rem; padding-right: 0.55rem; }
+}
+@media (max-width: 24rem) {
+  .theme-btn { padding: 0.34rem 0.5rem; }
+  .theme-btn span { display: none; }
+}
+@media (max-width: 21rem) {
+  .motion-btn span { display: none; }
+}
+
+/* The motion switch, built like the theme button and sitting beside it. Its
+   indicator is the mark's own cursor block: lit while this page is allowed to
+   move, an outline while it is not. */
+.motion-btn {
+  /* the auto margin puts this switch and the theme button together at the
+     right-hand end of the header, whatever the brand is doing */
+  margin-left: auto;
+  display: inline-flex; align-items: center; gap: 0.4rem;
+  white-space: nowrap; /* never wraps into a two-line button at 360px */
+  min-height: 2.1rem;
+  font: 500 0.76rem var(--sans);
+  letter-spacing: 0.01em;
+  color: var(--muted);
+  background: none;
+  border: 1px solid var(--rule);
+  border-radius: 8px;
+  padding: 0.34rem 0.7rem;
+  cursor: pointer;
+  transition: color var(--base) var(--ease), border-color var(--base) var(--ease);
+}
+.motion-btn:hover { color: var(--ink); border-color: var(--rule-strong); }
+.motion-btn i {
+  width: 0.66rem; height: 0.36rem;
+  border: 1px solid currentColor;
+  border-radius: 2px;
+}
+.motion-btn[aria-pressed="true"] { color: var(--ink); }
+.motion-btn[aria-pressed="true"] i { background: var(--accent); border-color: var(--accent); }
 
 /* ---------- hero --------------------------------------------------------- */
 
@@ -460,75 +503,144 @@ h2 {
 .site-foot p { margin: 0; max-width: 34rem; }
 
 /* ===========================================================================
-   Motion. Nothing below runs when the reader has asked for less of it, and the
-   page is complete and readable with all of it switched off.
+   Motion. The page is complete and readable with all of it switched off, and
+   the reader has the last word on whether it runs: their system's preference
+   is the starting point, and the switch in the header can overrule it either
+   way.
+
+   Every animation is named through a variable, so the whole layer is decided
+   by the four short blocks below and nothing else. The rules themselves are
+   not inside a media query any more: a rule a media query hides cannot be
+   switched back on.
    =========================================================================== */
 
+:root {
+  --a-rise: none;
+  --a-rule: none;
+  --a-focus: none;
+  --a-draw: none;
+  --a-blink: none;
+  --a-reveal: none;
+  --a-wipe: none;
+  --a-progress: none;
+  --letter-step: 22ms;
+}
+/* What the operating system says, for a reader who has not answered and for one
+   with JavaScript off, since only the script can set the attribute. */
 @media (prefers-reduced-motion: no-preference) {
-
-  /* -- arrival: the page assembles rather than appearing ------------------ */
-  .hero > * { animation: rise var(--slowest) var(--ease) both; }
-  .hero > *:nth-child(2) { animation-delay: 60ms; }
-  .hero > *:nth-child(3) { animation-delay: 120ms; }
-  .hero > *:nth-child(4) { animation-delay: 180ms; }
-  .hero > *:nth-child(5) { animation-delay: 240ms; }
-
-  .eyebrow::before { animation: rule-in var(--slowest) var(--ease) both; }
-
-  /* .hero > * sets the timing for every child; the name swaps the keyframes for
-     the blur-to-sharp one. A bare `h1` selector would lose to the class above,
-     which is exactly what happened the first time. */
-  .hero > h1 { animation-name: focus-in; }
-
-  /* The mark draws its own caret, then the cursor block blinks on a slow
-     cycle, the way a terminal does. */
-  .mark path {
-    stroke-dasharray: 24;
-    stroke-dashoffset: 24;
-    animation: draw 700ms var(--ease) 150ms both;
+  :root {
+    --a-rise: rise;
+    --a-rule: rule-in;
+    --a-focus: focus-in;
+    --a-draw: draw;
+    --a-blink: blink;
+    --a-reveal: reveal-in;
+    --a-wipe: theme-wipe;
+    --a-progress: progress-grow;
   }
-  .mark rect.cursor { animation: blink 1.4s steps(1, end) 900ms infinite; }
+}
+/* What the reader says, which outranks the system either way. */
+html[data-motion="on"] {
+  --a-rise: rise;
+  --a-rule: rule-in;
+  --a-focus: focus-in;
+  --a-draw: draw;
+  --a-blink: blink;
+  --a-reveal: reveal-in;
+  --a-wipe: theme-wipe;
+  --a-progress: progress-grow;
+}
+html[data-motion="off"] {
+  --a-rise: none;
+  --a-rule: none;
+  --a-focus: none;
+  --a-draw: none;
+  --a-blink: none;
+  --a-reveal: none;
+  --a-wipe: none;
+  --a-progress: none;
+}
 
-  /* -- scroll reveals: native, no observer, no listener ------------------- */
-  @supports (animation-timeline: view()) {
-    .reveal {
-      animation: reveal-in linear both;
-      animation-timeline: view();
-      animation-range: entry 5% cover 24%;
-    }
-    .reveal-group > * {
-      animation: reveal-in linear both;
-      animation-timeline: view();
-      animation-range: entry 2% cover 20%;
-    }
-  }
+/* -- arrival: the page assembles rather than appearing ------------------ */
+.hero > * { animation: var(--a-rise) var(--slowest) var(--ease) both; }
+.hero > *:nth-child(2) { animation-delay: 60ms; }
+.hero > *:nth-child(3) { animation-delay: 120ms; }
+.hero > *:nth-child(4) { animation-delay: 180ms; }
+.hero > *:nth-child(5) { animation-delay: 240ms; }
 
-  /* -- the theme change reveals itself from the button -------------------- */
-  ::view-transition-old(root) { animation: none; }
-  ::view-transition-new(root) {
-    animation: theme-wipe var(--slowest) var(--ease) both;
-  }
+.eyebrow::before { animation: var(--a-rule) var(--slowest) var(--ease) both; }
 
-  /* The reveal above is a promise the browser cannot always keep: an element
-     already on screen at load, or one with too little page left beneath it to
-     reach the end of its range, would wait forever at partial opacity. The
-     script hands those the ordinary arrival instead, so text is never dim on
-     purpose. Specificity ties with `.reveal-group > *`, so this must stay
-     below it. */
-  .reveal-appear {
-    animation: rise var(--slowest) var(--ease) both;
-    animation-timeline: auto;
-    animation-range: normal;
-  }
+/* .hero > * sets the timing for every child; the name swaps the keyframes for
+   the blur-to-sharp one. A bare `h1` selector would lose to the class above,
+   which is exactly what happened the first time. */
+.hero > h1 { animation-name: var(--a-focus); }
 
-  /* A block whose own children are already arriving stays still. Without this
-     the group and the paragraphs would move the same text twice, and the
-     arrival would read as heavier than the rest of the page. */
-  .reveal-hold {
-    animation: none;
-    animation-timeline: auto;
-    animation-range: normal;
+/* The script splits the name into letters before the first paint, each one
+   carrying its place in the queue, so it comes into focus from left to right
+   — the page writing the name it belongs to. With no script there is nothing
+   to split and the whole name takes the blur-to-sharp arrival instead. The
+   parent has to stand still, or the letters would move twice. */
+html[data-motion="on"] .hero > h1.split { animation-name: none; }
+html[data-motion="on"] .hero > h1.split > .w {
+  display: inline-block;
+  white-space: nowrap; /* a word may wrap, but never inside itself */
+}
+html[data-motion="on"] .hero > h1.split > .w > .l {
+  display: inline-block;
+  animation: var(--a-focus) var(--slowest) var(--ease) both;
+  animation-delay: calc(40ms + var(--i, 0) * var(--letter-step));
+}
+
+/* The mark draws its own caret, then the cursor block blinks on a slow
+   cycle, the way a terminal does — and steps up to a faster blink while the
+   reader is scrolling, as though it were working. */
+.mark path {
+  stroke-dasharray: 24;
+  stroke-dashoffset: 24;
+  animation: var(--a-draw) 700ms var(--ease) 150ms both;
+}
+.mark rect.cursor { animation: var(--a-blink) 1.4s steps(1, end) 900ms infinite; }
+html[data-scrolling] .mark rect.cursor { animation-duration: 520ms; }
+
+/* -- scroll reveals: native, no observer, no listener ------------------- */
+@supports (animation-timeline: view()) {
+  .reveal {
+    animation: var(--a-reveal) linear both;
+    animation-timeline: view();
+    animation-range: entry 5% cover 24%;
   }
+  .reveal-group > * {
+    animation: var(--a-reveal) linear both;
+    animation-timeline: view();
+    animation-range: entry 2% cover 20%;
+  }
+}
+
+/* -- the theme change reveals itself from the button -------------------- */
+::view-transition-old(root) { animation: none; }
+::view-transition-new(root) {
+  animation: var(--a-wipe) var(--slowest) var(--ease) both;
+}
+
+/* The reveal above is a promise the browser cannot always keep: an element
+   already on screen at load, or one with too little page left beneath it to
+   reach the end of its range, would wait forever at partial opacity. The
+   script hands those the ordinary arrival instead, so text is never dim on
+   purpose. Specificity ties with `.reveal-group > *`, so this must stay
+   below it. */
+.reveal-appear {
+  animation: var(--a-rise) var(--slowest) var(--ease) both;
+  animation-timeline: auto;
+  animation-range: normal;
+}
+
+/* A block whose own children are already arriving stays still. Without this
+   the group and the paragraphs would move the same text twice, and the
+   arrival would read as heavier than the rest of the page. */
+.reveal-hold {
+  animation: none;
+  animation-timeline: auto;
+  animation-range: normal;
 }
 
 @keyframes rise {
@@ -554,13 +666,27 @@ h2 {
   to { clip-path: circle(var(--wipe-r, 120vmax) at var(--wipe-x, 50%) var(--wipe-y, 2rem)); }
 }
 
+/* Two ways for motion to be off, and both flatten what is left: the operating
+   system asked for less and the reader has not overruled it, or the reader
+   asked for less on this page. The transitions in the layer above are not
+   named through the variables, so this is what stops them too. */
 @media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after {
+  html:not([data-motion="on"]) *,
+  html:not([data-motion="on"]) *::before,
+  html:not([data-motion="on"]) *::after {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
   }
+}
+html[data-motion="off"] *,
+html[data-motion="off"] *::before,
+html[data-motion="off"] *::after {
+  animation-duration: 0.01ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.01ms !important;
+  scroll-behavior: auto !important;
 }
 
 @media print {

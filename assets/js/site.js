@@ -1,15 +1,27 @@
-/* The whole site script. Five small things, no dependencies, about 3 KB.
+/* The whole site script. Six small things, no dependencies, about 4 KB.
 
    Everything here is an enhancement: with JavaScript off the page reads, every
-   link works, and the theme simply follows the operating system. Every moving
-   part checks two things first, that the reader has not asked for reduced
-   motion and that the browser can do the job. */
+   link works, and the theme and the motion both follow the operating system.
+   Every moving part checks two things first, that this page is allowed to move
+   and that the browser can do the job. */
 (function () {
   "use strict";
 
   var root = document.documentElement;
   var calm = window.matchMedia("(prefers-reduced-motion: reduce)");
   var fine = window.matchMedia("(hover: hover) and (pointer: fine)");
+
+  /* Whether this page is allowed to move. The small script in the head has
+     already set the attribute before the first paint — from the reader's own
+     choice if they have made one, otherwise from their system — so this is
+     usually just a read. The media query is the fallback for a page where that
+     script did not run. */
+  function motionOn() {
+    var flag = root.getAttribute("data-motion");
+    if (flag === "on") return true;
+    if (flag === "off") return false;
+    return !calm.matches;
+  }
 
   /* ---- theme, revealed from the button -------------------------------- */
   var btn = document.getElementById("themeBtn");
@@ -34,7 +46,7 @@
   if (btn) {
     btn.addEventListener("click", function () {
       var next = !isDark();
-      if (!document.startViewTransition || calm.matches) { apply(next); return; }
+      if (!document.startViewTransition || !motionOn()) { apply(next); return; }
 
       // The wipe starts where the button is and grows past the farthest corner.
       var box = btn.getBoundingClientRect();
@@ -48,6 +60,45 @@
       document.startViewTransition(function () { apply(next); });
     });
   }
+
+  /* ---- the reader's own answer about motion ---------------------------- */
+  var motionBtn = document.getElementById("motionBtn");
+
+  /* The button carries one word and one block of light. The block is lit while
+     this page is allowed to move, and `aria-pressed` says the same thing to a
+     screen reader, so the words never have to change under the reader's eyes
+     and the header never reflows when the switch is thrown. */
+  function describeMotion() {
+    if (motionBtn) motionBtn.setAttribute("aria-pressed", motionOn() ? "true" : "false");
+  }
+
+  describeMotion();
+
+  if (motionBtn) {
+    motionBtn.addEventListener("click", function () {
+      var next = !motionOn();
+      root.setAttribute("data-motion", next ? "on" : "off");
+      if (!next) root.removeAttribute("data-scrolling");
+      try { localStorage.setItem("pg-motion", next ? "on" : "off"); } catch (e) {}
+      describeMotion();
+      // Turning it on has to finish what the load could not: the reveals that
+      // are already on screen get their arrival now instead of never.
+      if (next) settleReveals();
+    });
+  }
+
+  /* ---- the mark's caret works while the reader scrolls ------------------ */
+  var still;
+  var working = false;
+  window.addEventListener("scroll", function () {
+    if (!motionOn()) return;
+    if (!working) { working = true; root.setAttribute("data-scrolling", ""); }
+    clearTimeout(still);
+    still = setTimeout(function () {
+      working = false;
+      root.removeAttribute("data-scrolling");
+    }, 240);
+  }, { passive: true });
 
   /* ---- copy the address ------------------------------------------------ */
   var copy = document.getElementById("copyBtn");
@@ -84,7 +135,7 @@
   var firstPass = true;
 
   function settleReveals() {
-    if (calm.matches || !reveals.length) return;
+    if (!motionOn() || !reveals.length) return;
     var vh = window.innerHeight;
     var page = document.documentElement.scrollHeight;
     for (var i = 0; i < reveals.length; i++) {
@@ -121,10 +172,12 @@
 
   /* ---- the panel listens for the pointer ------------------------------- */
   var panel = document.getElementById("contactPanel");
-  if (panel && fine.matches && !calm.matches) {
+  if (panel && fine.matches) {
     var queued = false;
     panel.addEventListener("pointermove", function (e) {
-      if (queued) return;
+      // listened for either way, so the switch in the header takes effect where
+      // the reader is standing rather than at the next reload
+      if (!motionOn() || queued) return;
       queued = true;
       requestAnimationFrame(function () {
         var box = panel.getBoundingClientRect();
@@ -137,12 +190,12 @@
 
   /* ---- the primary button leans towards the pointer -------------------- */
   var actions = document.querySelector(".actions");
-  if (actions && fine.matches && !calm.matches) {
+  if (actions && fine.matches) {
     var magnet = actions.querySelector(".btn.primary");
     if (magnet) {
       var frame = false;
       actions.addEventListener("pointermove", function (e) {
-        if (frame) return;
+        if (!motionOn() || frame) return;
         frame = true;
         requestAnimationFrame(function () {
           var box = magnet.getBoundingClientRect();

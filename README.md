@@ -103,6 +103,23 @@ a class, so a page with the script blocked still reads.
 If a section is added near the foot of the page, the reveal there is the one to
 check first: scroll it into view and leave it, then confirm it is fully opaque.
 
+## Who decides whether the page moves
+
+The operating system's preference is the starting point and the reader has the
+last word, through the switch in the header. Nothing about this is left to a
+media query alone: every animation is named through a variable (`--a-rise`,
+`--a-focus`, `--a-wipe` and so on), and four short blocks set those variables —
+the quiet default, the system's answer, the reader saying on, the reader saying
+off. That is why the motion rules themselves are no longer inside
+`prefers-reduced-motion`: a rule a media query hides cannot be switched back on
+by the reader.
+
+The switch is set in the small script in the head, before the first paint, and
+remembered in `pg-motion`. Check four combinations when touching this: system on,
+system off, reader overrules their system, and no script at all (where the media
+query is the only thing that decides). `pw-check.js` in the scratch folder runs
+all four.
+
 One detail worth keeping: `404.html` carries its own styles inline instead of
 linking the stylesheet. A 404 is served at whatever path was asked for, so a
 linked stylesheet would have to be either root-absolute (wrong under a subpath)

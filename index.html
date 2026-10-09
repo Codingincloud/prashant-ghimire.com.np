@@ -20,22 +20,34 @@
 <meta name="twitter:card" content="summary_large_image">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
+<!-- The motion switch is only a switch when there is a script to work it. -->
+<noscript><style>.motion-btn { display: none; }</style></noscript>
 <link rel="preload" href="assets/fonts/newsreader-latin.woff2" as="font" type="font/woff2" crossorigin>
 <!-- The ?v= token is the cache key. Cloudflare caches static files at the edge
      for four hours (max-age=14400), so without a new token a change to the
      stylesheet is invisible to anyone who has loaded the site before. Bump it
      whenever site.css or site.js changes: any date or short string will do. -->
-<link rel="stylesheet" href="assets/css/site.css?v=2026-10-09c">
+<link rel="stylesheet" href="assets/css/site.css?v=2026-10-09d">
 <script>
-  // Set the theme before the first paint so the page never flashes the wrong
-  // background. No stored choice means the operating system gets to decide.
+  // Both decisions are made before the first paint, so the page never flashes
+  // the wrong background and never starts to move for a reader who has asked it
+  // not to. No stored choice means the operating system gets to decide; a
+  // stored one wins, which is how a reader whose system asks for less motion
+  // can still ask this page for it.
   (function () {
     try {
-      var saved = localStorage.getItem("pg-theme");
-      var dark = saved
-        ? saved === "dark"
+      var root = document.documentElement;
+      var theme = localStorage.getItem("pg-theme");
+      var dark = theme
+        ? theme === "dark"
         : window.matchMedia("(prefers-color-scheme: dark)").matches;
-      if (dark) document.documentElement.setAttribute("data-theme", "dark");
+      if (dark) root.setAttribute("data-theme", "dark");
+
+      var motion = localStorage.getItem("pg-motion");
+      if (motion !== "on" && motion !== "off") {
+        motion = window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "off" : "on";
+      }
+      root.setAttribute("data-motion", motion);
     } catch (e) {}
   })();
 </script>
@@ -57,6 +69,9 @@
       <span class="brand-name">Prashant Ghimire</span>
       <span class="brand-place">Kathmandu</span>
     </a>
+    <button class="motion-btn" id="motionBtn" type="button" aria-pressed="false" aria-label="Motion">
+      <i aria-hidden="true"></i><span>Motion</span>
+    </button>
     <button class="theme-btn" id="themeBtn" type="button">
       <svg class="sun" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="4.2"></circle></svg>
       <svg class="moon" viewBox="0 0 16 16" aria-hidden="true"><path d="M11 1.6a6.6 6.6 0 1 0 3.4 11.7A5.4 5.4 0 0 1 11 1.6Z"></path></svg>
@@ -70,7 +85,37 @@
 
     <section class="hero" id="top">
       <p class="eyebrow">Kathmandu, Nepal · UTC+5:45</p>
-      <h1>Prashant Ghimire</h1>
+      <h1 id="name">Prashant Ghimire</h1>
+      <script>
+        // The name arrives one letter at a time, so it is split here rather than
+        // in the page script at the end: this runs while the parser is still
+        // walking the hero, so the whole name can never flash first and then
+        // dissolve into letters. If this never runs the name stays whole and
+        // arrives whole, which is the whole point of it being here.
+        (function () {
+          var name = document.getElementById("name");
+          if (!name) return;
+          var words = name.textContent.split(" ");
+          var frag = document.createDocumentFragment();
+          var i = 0;
+          for (var w = 0; w < words.length; w++) {
+            if (w) frag.appendChild(document.createTextNode(" "));
+            var word = document.createElement("span");
+            word.className = "w";
+            for (var c = 0; c < words[w].length; c++) {
+              var letter = document.createElement("span");
+              letter.className = "l";
+              letter.textContent = words[w].charAt(c);
+              letter.style.setProperty("--i", i++);
+              word.appendChild(letter);
+            }
+            frag.appendChild(word);
+          }
+          name.textContent = "";
+          name.appendChild(frag);
+          name.className = "split";
+        })();
+      </script>
       <p class="lede">
         Fourth-year computer engineering student, working toward a security
         analyst internship. Linux, networking, and the fundamentals underneath
@@ -157,7 +202,7 @@
 <footer class="site-foot">
   <div class="wrap">
     <p>Prashant Ghimire, Kathmandu. Last updated 9 October 2026.</p>
-    <p>Hand-written HTML and CSS, one small script. No framework, no build step, no dependencies.</p>
+    <p>Hand-written HTML and CSS, a few lines of JavaScript. No framework, no build step, no dependencies.</p>
   </div>
 </footer>
 
@@ -174,6 +219,6 @@
   "knowsAbout": ["Linux", "Computer networking", "Information security"]
 }
 </script>
-<script src="assets/js/site.js?v=2026-10-09c"></script>
+<script src="assets/js/site.js?v=2026-10-09d"></script>
 </body>
 </html>
