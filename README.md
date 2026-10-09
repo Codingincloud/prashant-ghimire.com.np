@@ -10,15 +10,16 @@ index.html                  the whole site
 404.html                    served by GitHub Pages for anything missing
 CNAME                       prashant-ghimire.com.np
 assets/css/site.css         the stylesheet
-assets/js/site.js           theme toggle and the copy-email button
+assets/js/site.js           theme, motion switch, copy-email, pointer and scroll detail
 assets/fonts/               Inter (UI) and Newsreader (display, prose), woff2
 assets/img/og.png           the card that shows when the link is shared
 assets/Prashant-Ghimire-CV.pdf
 robots.txt · sitemap.xml · favicon.svg · .nojekyll
 ```
 
-The folder is about 238 KB in total, most of it the two font files. A visitor loads
-about 193 KB.
+The folder is about 284 KB in total, most of it the two font files (176 KB) and
+the social card (35 KB). A visitor loads about 193 KB: the fonts, plus the HTML,
+stylesheet and script compressed, which is how they are served.
 
 ## Publishing it
 
@@ -103,14 +104,44 @@ a class, so a page with the script blocked still reads.
 If a section is added near the foot of the page, the reveal there is the one to
 check first: scroll it into view and leave it, then confirm it is fully opaque.
 
+## The name, and the caret it carries
+
+The name arrives one letter at a time, each letter 22 ms behind the one before
+it, so the page writes its own name rather than blinking it into place. The
+split happens in a script sitting beside the heading in the markup, not in the
+page script at the end: it runs while the parser is still walking the hero, so
+the whole name can never flash first and then dissolve into letters. With no
+script there is nothing to split, the name stays whole, and it takes the
+ordinary blur-to-sharp arrival instead.
+
+At the end of it sits a caret, which blinks twice once the last letter has landed
+and then retires, leaving the mark in the header to keep blinking. It is **drawn,
+not laid out**: an anchor of no size on the baseline, with the bar hanging off it
+and the timeline animating the anchor's opacity. That is not fussiness. A caret
+with real width and height in the line was measured changing the `h1`'s height by
+2.7 px at every width, and at 360 px it was pushed onto a line of its own, taking
+the lede down 44 px with it. `caret-layout.js` in the scratch folder holds that
+measurement at nine widths, and samples real pixels to confirm the bar is drawn
+exactly during the two blinks and not otherwise.
+
+The other thing that answers the scroll is the hero itself, drifting 18 px
+against it as it leaves the fold — the whole of the parallax on this site. It is
+a transform on the block holding the most text on the page, so it was measured
+the same way: p95 frame time while scrolling is 6.2 ms with the drift and 6.5 ms
+without, at both 1280x900 and 2560x1440, with no frame over 33 ms and no long
+tasks.
+
 ## The light behind the page
 
 From a laptop up, two soft lights sit behind everything — one in the top corner,
 one down the left — drawn with radial gradients rather than fetched from
 anywhere. They drift on their own over about a minute, lean a few pixels with
-the pointer, and slide as the page scrolls. Below 48rem the layers are never
-built at all, and on a device reporting less than 4GB of memory the pointer lean
-is left out entirely.
+the pointer, and slide as the page scrolls. As the reader moves from one section
+to the next, one light steps down the right-hand margin and the other rises up
+the left, so the room keeps changing without anything on the page having to move;
+the stylesheet takes 1.6 s over each step, and the light stays where it was left
+if motion is switched off. Below 48rem the layers are never built at all, and on
+a device reporting less than 4GB of memory the pointer lean is left out entirely.
 
 They are decoration with a cost, so the two things that could go wrong are
 measured rather than assumed. Contrast: the worst text on the page holds 4.9:1 in
@@ -140,6 +171,14 @@ remembered in `pg-motion`. Check four combinations when touching this: system on
 system off, reader overrules their system, and no script at all (where the media
 query is the only thing that decides). `pw-check.js` in the scratch folder runs
 all four.
+
+The stylesheet can only silence what has not started yet. A transition already
+running keeps its own clock to the end, so a reader turning motion off mid-scroll
+would still get the whole 1.6 s of light sliding past — measured, not guessed.
+The switch therefore cancels what is in flight on the way out (`stopInFlight()`
+in `site.js`), which lands each one on the value it was heading for: the light
+stays where they left it, and nothing is left running. The layers the theme wipe
+animates are pseudo-elements, and those are deliberately left alone.
 
 One detail worth keeping: `404.html` carries its own styles inline instead of
 linking the stylesheet. A 404 is served at whatever path was asked for, so a

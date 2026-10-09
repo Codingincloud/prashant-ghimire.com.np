@@ -1,4 +1,4 @@
-/* The whole site script. Six small things, no dependencies, about 4 KB.
+/* The whole site script. Seven small things, no dependencies, about 4 KB.
 
    Everything here is an enhancement: with JavaScript off the page reads, every
    link works, and the theme and the motion both follow the operating system.
@@ -74,11 +74,27 @@
 
   describeMotion();
 
+  /* The stylesheet can only silence what has not started yet. A transition
+     already running keeps its own clock to the end, so the reader who asks for
+     calm mid-scroll would still have a second and a half of light sliding past.
+     Cancelling lands each one on the value it was heading for — the light stays
+     where they left it — and leaves nothing moving. The layers the theme wipe
+     animates are pseudo-elements, and they are left alone. */
+  function stopInFlight() {
+    if (!document.getAnimations) return;
+    document.getAnimations().forEach(function (a) {
+      var target = a.effect && a.effect.target;
+      if (!target || target.nodeType !== 1) return;
+      try { a.cancel(); } catch (e) {}
+    });
+  }
+
   if (motionBtn) {
     motionBtn.addEventListener("click", function () {
       var next = !motionOn();
       root.setAttribute("data-motion", next ? "on" : "off");
       if (!next) root.removeAttribute("data-scrolling");
+      if (!next) stopInFlight();
       try { localStorage.setItem("pg-motion", next ? "on" : "off"); } catch (e) {}
       describeMotion();
       // Turning it on has to finish what the load could not: the reveals that
@@ -110,6 +126,28 @@
         leaning = false;
       });
     }, { passive: true });
+  }
+
+  /* ---- the light stands where the reader is ---------------------------- */
+
+  /* One light descends the right-hand margin and the other rises up the left
+     as the page is read, so the room keeps changing without anything on the
+     page having to move. Section changes are rare, and the stylesheet takes a
+     second and a half over each one. The light is left where it is if the
+     reader switches motion off, rather than snapping home under them. */
+  if (ambience && "IntersectionObserver" in window) {
+    var rooms = document.querySelectorAll("main section");
+    var travel = [[0, 0], [300, -220], [620, -420]];
+    var reads = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        if (!entry.isIntersecting || !motionOn()) return;
+        var at = [].indexOf.call(rooms, entry.target);
+        var spot = travel[Math.max(0, Math.min(at, travel.length - 1))];
+        ambience.style.setProperty("--s1y", spot[0] + "px");
+        ambience.style.setProperty("--s2y", spot[1] + "px");
+      });
+    }, { rootMargin: "-45% 0px -45% 0px" });
+    for (var r = 0; r < rooms.length; r++) reads.observe(rooms[r]);
   }
 
   /* ---- the mark's caret works while the reader scrolls ------------------ */

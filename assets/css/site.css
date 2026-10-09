@@ -126,6 +126,18 @@ body::before {
   position: absolute;
   inset: 0;
 }
+/* Each light rides in a mover of its own. The mover carries the reading
+   position — where the light stands for this part of the page — and the light
+   inside it carries nothing but its own slow drift, so the two never want the
+   same transform. */
+.ambience .m1,
+.ambience .m2 {
+  position: absolute;
+  inset: 0;
+  transition: transform 1600ms var(--ease);
+}
+.ambience .m1 { transform: translate3d(var(--s1x, 0px), var(--s1y, 0px), 0); }
+.ambience .m2 { transform: translate3d(var(--s2x, 0px), var(--s2y, 0px), 0); }
 .ambience i {
   position: absolute;
   display: block;
@@ -134,13 +146,13 @@ body::before {
   background: radial-gradient(circle,
     color-mix(in srgb, var(--accent) 22%, transparent), transparent 68%);
 }
-.ambience i:nth-child(1) {
+.ambience .m1 > i {
   /* the warm one sits in the top corner, its centre just inside the screen, so
      the light the reader sees is the light itself rather than its tail */
   width: 40rem; height: 40rem;
   top: -13rem; right: -5rem;
 }
-.ambience i:nth-child(2) {
+.ambience .m2 > i {
   width: 34rem; height: 34rem;
   top: 26rem; left: -13rem;
   background: radial-gradient(circle,
@@ -588,6 +600,8 @@ h2 {
   --a-glow-1: none;
   --a-glow-2: none;
   --a-glow-lift: none;
+  --a-hero-drift: none;
+  --a-caret: none;
   --letter-step: 22ms;
 }
 /* What the operating system says, for a reader who has not answered and for one
@@ -605,6 +619,8 @@ h2 {
     --a-glow-1: glow-one;
     --a-glow-2: glow-two;
     --a-glow-lift: glow-lift;
+    --a-hero-drift: hero-drift;
+    --a-caret: caret-retire;
   }
 }
 /* What the reader says, which outranks the system either way. */
@@ -620,6 +636,8 @@ html[data-motion="on"] {
   --a-glow-1: glow-one;
   --a-glow-2: glow-two;
   --a-glow-lift: glow-lift;
+  --a-hero-drift: hero-drift;
+  --a-caret: caret-retire;
 }
 html[data-motion="off"] {
   --a-rise: none;
@@ -633,9 +651,11 @@ html[data-motion="off"] {
   --a-glow-1: none;
   --a-glow-2: none;
   --a-glow-lift: none;
+  --a-hero-drift: none;
+  --a-caret: none;
 }
 
-/* -- arrival: the page assembles rather than appearing ------------------ */
+/* -- arrival: the page assembles rather than appearing -------------------- */
 .hero > * { animation: var(--a-rise) var(--slowest) var(--ease) both; }
 .hero > *:nth-child(2) { animation-delay: 60ms; }
 .hero > *:nth-child(3) { animation-delay: 120ms; }
@@ -678,11 +698,53 @@ html[data-scrolling] .mark rect.cursor { animation-duration: 520ms; }
 
 /* The lights. Slow enough that nothing is ever caught moving: the room changes
    over a minute, and slides a few pixels as the reader scrolls. */
-.ambience i:nth-child(1) {
+.ambience .m1 > i {
   animation: var(--a-glow-1) 64s ease-in-out infinite alternate;
 }
-.ambience i:nth-child(2) {
+.ambience .m2 > i {
   animation: var(--a-glow-2) 88s ease-in-out infinite alternate;
+}
+
+/* The hero drifts a little slower than the page as it leaves, which is the
+   whole of the parallax on this site: enough to give the fold a floor, not
+   enough to watch. Type responding to the scroll is the one effect worth
+   borrowing from the agency portfolios, and it only needs to be small. */
+@supports (animation-timeline: scroll()) {
+  .hero {
+    animation: var(--a-hero-drift) linear both;
+    animation-timeline: scroll(root block);
+    animation-range: 0 65vh;
+  }
+}
+
+/* The caret sits at the end of the name, blinks twice once the last letter has
+   landed, and retires. The header's mark keeps the blinking from then on.
+
+   It is drawn rather than laid out: the anchor on the baseline has no size at
+   all, and the bar hangs off it. Anything with width or height in the line
+   changes the h1's own height, and on a narrow phone the caret gets pushed
+   onto a line of its own and takes the lede down with it. Both were measured.
+   The opacity on the anchor is what the timeline animates, and it fades the
+   bar with it. */
+.hero > h1.split > .caret {
+  position: relative;
+  display: inline-block;
+  width: 0;
+  height: 0;
+  opacity: 0;
+}
+.hero > h1.split > .caret::after {
+  content: "";
+  position: absolute;
+  left: 0.1em;
+  bottom: 0.06em;
+  width: 0.075em;
+  height: 0.72em;
+  border-radius: 1px;
+  background: var(--accent);
+}
+html[data-motion="on"] .hero > h1.split > .caret {
+  animation: var(--a-caret) 1.6s steps(1, end) 900ms both;
 }
 @supports (animation-timeline: scroll()) {
   .ambience .room {
@@ -773,6 +835,17 @@ html[data-scrolling] .mark rect.cursor { animation-duration: 520ms; }
 @keyframes glow-lift {
   from { transform: translateY(0); }
   to { transform: translateY(-6rem); }
+}
+@keyframes hero-drift {
+  from { transform: translateY(0); }
+  to { transform: translateY(-18px); }
+}
+@keyframes caret-retire {
+  0%, 12% { opacity: 0; }
+  13%, 37% { opacity: 1; }
+  38%, 54% { opacity: 0; }
+  55%, 79% { opacity: 1; }
+  80%, 100% { opacity: 0; }
 }
 
 /* Two ways for motion to be off, and both flatten what is left: the operating

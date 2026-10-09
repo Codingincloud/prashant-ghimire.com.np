@@ -27,7 +27,7 @@
      for four hours (max-age=14400), so without a new token a change to the
      stylesheet is invisible to anyone who has loaded the site before. Bump it
      whenever site.css or site.js changes: any date or short string will do. -->
-<link rel="stylesheet" href="assets/css/site.css?v=2026-10-09d">
+<link rel="stylesheet" href="assets/css/site.css?v=2026-10-09g">
 <script>
   // Both decisions are made before the first paint, so the page never flashes
   // the wrong background and never starts to move for a reader who has asked it
@@ -60,7 +60,10 @@
 <!-- Two soft lights behind the page, for screens with room either side of the
      column. Decoration only: nothing here is read out or clickable. -->
 <div class="ambience" aria-hidden="true">
-  <div class="room"><i></i><i></i></div>
+  <div class="room">
+    <span class="m1"><i></i></span>
+    <span class="m2"><i></i></span>
+  </div>
 </div>
 
 <header class="site-head">
@@ -104,6 +107,7 @@
           var words = name.textContent.split(" ");
           var frag = document.createDocumentFragment();
           var i = 0;
+          // the caret that types the name, then blinks twice and retires
           for (var w = 0; w < words.length; w++) {
             if (w) frag.appendChild(document.createTextNode(" "));
             var word = document.createElement("span");
@@ -117,6 +121,11 @@
             }
             frag.appendChild(word);
           }
+          var caret = document.createElement("i");
+          caret.className = "caret";
+          caret.setAttribute("aria-hidden", "true");
+          frag.appendChild(caret);
+
           name.textContent = "";
           name.appendChild(frag);
           name.className = "split";
@@ -225,6 +234,6 @@
   "knowsAbout": ["Linux", "Computer networking", "Information security"]
 }
 </script>
-<script src="assets/js/site.js?v=2026-10-09d"></script>
+<script src="assets/js/site.js?v=2026-10-09f"></script>
 </body>
 </html>
